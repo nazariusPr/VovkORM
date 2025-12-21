@@ -93,6 +93,11 @@ public class SimpleEntityReader implements EntityReader {
     }
 
     @Override
+    public <T> List<T> read(Connection connection, TableMetadata<T> metadata, String sql) {
+        return executeSelect(connection, metadata, sql);
+    }
+
+    @Override
     public <T> List<T> read(Connection connection, TableMetadata<T> metadata, Select select) {
         return executeSelect(connection, metadata, select);
     }
@@ -136,7 +141,19 @@ public class SimpleEntityReader implements EntityReader {
 
     @Override
     public <T> List<T> fetchValues(Connection connection, Select select) {
-        return withStatement(connection, select, dialect, stmt -> {
+        String sql = select.build(dialect);
+        return fetchValues(connection, sql);
+    }
+
+    @Override
+    public <T> T fetchValue(Connection connection, Select select) {
+        String sql = select.build(dialect);
+        return fetchValue(connection, sql);
+    }
+
+    @Override
+    public <T> List<T> fetchValues(Connection connection, String sql) {
+        return withStatement(connection, sql, stmt -> {
             try (ResultSet rs = stmt.executeQuery()) {
                 List<T> results = new ArrayList<>();
 
@@ -147,14 +164,14 @@ public class SimpleEntityReader implements EntityReader {
 
                 return results;
             } catch (SQLException e) {
-                throw new RuntimeException("Failed to read values from table: " + select.getTable(), e);
+                throw new RuntimeException("Failed to read values from table", e);
             }
         });
     }
 
     @Override
-    public <T> T fetchValue(Connection connection, Select select) {
-        return withStatement(connection, select, dialect, stmt -> {
+    public <T> T fetchValue(Connection connection, String sql) {
+        return withStatement(connection, sql, stmt -> {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     return (T) rs.getObject(1);
@@ -162,7 +179,7 @@ public class SimpleEntityReader implements EntityReader {
 
                 return null;
             } catch (SQLException e) {
-                throw new RuntimeException("Failed to read value from table: " + select.getTable(), e);
+                throw new RuntimeException("Failed to read value from table", e);
             }
         });
     }
@@ -271,8 +288,8 @@ public class SimpleEntityReader implements EntityReader {
         });
     }
 
-    private <T> List<T> executeSelect(Connection connection, TableMetadata<T> metadata, Select sql) {
-        return withStatement(connection, sql, dialect, stmt -> {
+    private <T> List<T> executeSelect(Connection connection, TableMetadata<T> metadata, String sql) {
+        return withStatement(connection, sql, stmt -> {
             try (ResultSet rs = stmt.executeQuery()) {
                 List<T> results = new ArrayList<>();
                 while (rs.next()) {
@@ -285,5 +302,10 @@ public class SimpleEntityReader implements EntityReader {
                 throw new RuntimeException("Failed to read entities from table: " + metadata.getTableName(), e);
             }
         });
+    }
+
+    private <T> List<T> executeSelect(Connection connection, TableMetadata<T> metadata, Select select) {
+        String sql = select.build(dialect);
+        return executeSelect(connection, metadata, sql);
     }
 }

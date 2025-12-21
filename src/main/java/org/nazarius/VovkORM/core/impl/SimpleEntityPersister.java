@@ -55,6 +55,17 @@ public class SimpleEntityPersister implements EntityPersister {
     }
 
     @Override
+    public int delete(Connection connection, String delete) {
+        return withStatement(connection, delete, stmt -> {
+            try {
+                return stmt.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to execute delete SQL", e);
+            }
+        });
+    }
+
+    @Override
     public int delete(Connection connection, Delete delete) {
         return executePersistAction(connection, delete.getTable(), delete);
     }

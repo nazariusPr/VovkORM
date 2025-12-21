@@ -15,6 +15,8 @@ public interface EntityReader {
 
     <T> T readById(Connection connection, TableMetadata<T> metadata, Object id);
 
+    <T> List<T> read(Connection connection, TableMetadata<T> metadata, String sql);
+
     <T> List<T> read(Connection connection, TableMetadata<T> metadata, Select select);
 
     <T> List<T> read(Connection connection, TableMetadata<T> metadata, Where where);
@@ -24,6 +26,10 @@ public interface EntityReader {
     <T> List<T> fetchValues(Connection connection, Select select);
 
     <T> T fetchValue(Connection connection, Select select);
+
+    <T> List<T> fetchValues(Connection connection, String sql);
+
+    <T> T fetchValue(Connection connection, String sql);
 
     List<List<?>> fetchRows(Connection connection, Select select);
 

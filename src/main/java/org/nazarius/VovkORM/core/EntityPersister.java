@@ -11,6 +11,8 @@ public interface EntityPersister {
 
     <T> int delete(Connection connection, TableMetadata<T> metadata, T entity);
 
+    int delete(Connection connection, String delete);
+
     int delete(Connection connection, Delete delete);
 
     <T> int delete(Connection connection, TableMetadata<T> metadata, Where where);

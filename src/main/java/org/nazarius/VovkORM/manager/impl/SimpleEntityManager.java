@@ -57,6 +57,14 @@ public class SimpleEntityManager implements EntityManager {
     }
 
     @Override
+    public <T> List<T> read(String select, Class<T> clazz) {
+        return withConnection(conn -> {
+            TableMetadata<T> metadata = scanner.scan(clazz);
+            return reader.read(conn, metadata, select);
+        });
+    }
+
+    @Override
     public <T> List<T> read(Select select, Class<T> clazz) {
         return withConnection(conn -> {
             TableMetadata<T> metadata = scanner.scan(clazz);
@@ -87,6 +95,16 @@ public class SimpleEntityManager implements EntityManager {
 
     @Override
     public <T> T fetchValue(Select select) {
+        return withConnection(conn -> reader.fetchValue(conn, select));
+    }
+
+    @Override
+    public <T> List<T> fetchValues(String select) {
+        return withConnection(conn -> reader.fetchValues(conn, select));
+    }
+
+    @Override
+    public <T> T fetchValue(String select) {
         return withConnection(conn -> reader.fetchValue(conn, select));
     }
 
@@ -154,7 +172,12 @@ public class SimpleEntityManager implements EntityManager {
     }
 
     @Override
-    public <T> int delete(Delete delete) {
+    public int delete(String delete) {
+        return withConnection(conn -> persister.delete(conn, delete));
+    }
+
+    @Override
+    public int delete(Delete delete) {
         return withConnection(conn -> persister.delete(conn, delete));
     }
 

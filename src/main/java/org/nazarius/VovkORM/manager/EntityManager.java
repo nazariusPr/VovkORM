@@ -19,6 +19,8 @@ public interface EntityManager {
 
     <T> T readById(Object id, Class<T> clazz);
 
+    <T> List<T> read(String select, Class<T> clazz);
+
     <T> List<T> read(Select select, Class<T> clazz);
 
     <T> List<T> read(Where where, Class<T> clazz);
@@ -28,6 +30,10 @@ public interface EntityManager {
     <T> List<T> fetchValues(Select select);
 
     <T> T fetchValue(Select select);
+
+    <T> List<T> fetchValues(String select);
+
+    <T> T fetchValue(String select);
 
     List<List<?>> fetchRows(Select select);
 
@@ -45,7 +51,9 @@ public interface EntityManager {
 
     <T> int delete(T entity, Class<T> clazz);
 
-    <T> int delete(Delete delete);
+    int delete(String delete);
+
+    int delete(Delete delete);
 
     <T> int delete(Where where, Class<T> clazz);
 }

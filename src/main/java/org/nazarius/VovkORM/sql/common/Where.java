@@ -17,8 +17,18 @@ public class Where {
         return this;
     }
 
+    public Where ne(Object value) {
+        appendCondition("<>", value);
+        return this;
+    }
+
     public Where gt(Object value) {
         appendCondition(">", value);
+        return this;
+    }
+
+    public Where gte(Object value) {
+        appendCondition(">=", value);
         return this;
     }
 
@@ -27,8 +37,28 @@ public class Where {
         return this;
     }
 
+    public Where lte(Object value) {
+        appendCondition("<=", value);
+        return this;
+    }
+
     public Where like(String value) {
         appendCondition("LIKE", value);
+        return this;
+    }
+
+    public Where notLike(String value) {
+        appendCondition("NOT LIKE", value);
+        return this;
+    }
+
+    public Where isNull() {
+        appendCondition("IS", null);
+        return this;
+    }
+
+    public Where isNotNull() {
+        appendCondition("IS NOT", null);
         return this;
     }
 
